@@ -1,0 +1,18 @@
+{% extends "articles/base.html" %}
+{% load article_content %}
+
+{% block title %}Sobre mí{% endblock %}
+{% block meta_description %}Conoce a quien escribe en Bitácora Robótica.{% endblock %}
+
+{% block content %}
+    <article class="about-page">
+        <p class="eyebrow">Detrás del cuaderno</p>
+        <h1>Sobre mí</h1>
+        {% if profile %}
+            <h2>{{ profile.display_name }}</h2>
+            <div class="prose">{{ profile.biography|format_article_content }}</div>
+        {% else %}
+            <p class="empty-state">La presentación del autor estará disponible próximamente.</p>
+        {% endif %}
+    </article>
+{% endblock %}

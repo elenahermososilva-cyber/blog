@@ -1,0 +1,31 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block meta_description %}Artículos sobre robótica, tecnología y aprendizaje.{% endblock %}">
+    <title>{% block title %}Bitácora Robótica{% endblock %} | Bitácora Robótica</title>
+    <link rel="stylesheet" href="{% static 'articles/site.css' %}">
+</head>
+<body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="{% url 'home' %}">Bitácora Robótica</a>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-list">
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'about' %}">Sobre mí</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main id="contenido" class="page">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <p>Ideas para explorar el mundo de la robótica, un proyecto a la vez.</p>
+    </footer>
+</body>
+</html>

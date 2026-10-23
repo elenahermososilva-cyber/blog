@@ -1,0 +1,12 @@
+{% extends "articles/base.html" %}
+
+{% block title %}Página no encontrada{% endblock %}
+
+{% block content %}
+    <section class="not-found" aria-labelledby="page-title">
+        <p class="eyebrow">Error 404 · Señal perdida</p>
+        <h1 id="page-title">¡Un robot se ha llevado esta página!</h1>
+        <p>Hemos buscado por todo el taller, pero esta dirección no aparece en el mapa.</p>
+        <a class="button-link" href="{% url 'home' %}">Volver a la portada</a>
+    </section>
+{% endblock %}

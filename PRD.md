@@ -26,6 +26,7 @@ No habrá cuentas públicas ni registro de lectores. Para mantener el contenido 
 5. Diseño adaptable, legible y accesible, con prioridad en el contenido.
 6. Contenido inicial de ejemplo que pueda sustituirse.
 7. Gestión básica del contenido mediante el panel administrativo de Django.
+8. Imágenes de portada opcionales e imágenes insertadas en el cuerpo de los artículos.
 
 ### Excluido
 
@@ -40,7 +41,7 @@ No habrá cuentas públicas ni registro de lectores. Para mantener el contenido 
 
 ### RF-01: Mostrar la portada
 
-La portada debe mostrar el nombre del blog y una lista de artículos recientes publicados, ordenados del más nuevo al más antiguo. Cada elemento debe incluir título, fecha y un extracto, y enlazar al artículo completo.
+La portada debe mostrar el nombre del blog y una lista de artículos recientes publicados, ordenados del más nuevo al más antiguo. Cada elemento debe incluir título, fecha y un extracto, y enlazar al artículo completo. Si el artículo tiene imagen de portada, esta se presenta en su tarjeta.
 
 **Criterios de aceptación**
 
@@ -53,11 +54,15 @@ La portada debe mostrar el nombre del blog y una lista de artículos recientes p
 
 Cada artículo debe tener una página propia que muestre título, fecha de publicación, autoría y contenido. El texto debe admitir párrafos y subtítulos para facilitar la lectura.
 
+Los artículos pueden incluir una imagen de portada y varias imágenes dentro del texto. Las imágenes en línea se insertan en una posición explícita del contenido y pueden mostrar pie de foto.
+
 **Criterios de aceptación**
 
 - La página muestra todos los datos disponibles del artículo.
 - El contenido mantiene una estructura legible y conserva sus párrafos y subtítulos.
 - Una ruta de artículo inexistente devuelve una página de no encontrado (HTTP 404).
+- La portada y las imágenes insertadas aparecen en la página del artículo y se adaptan al ancho disponible.
+- Las imágenes informativas disponen de texto alternativo y los pies de foto configurados se muestran junto a su imagen.
 
 ### RF-03: Consultar «Sobre mí»
 
@@ -86,6 +91,7 @@ El editor podrá crear, editar y retirar artículos y actualizar el texto de «S
 **Criterios de aceptación**
 
 - El panel administrativo permite gestionar los artículos y la presentación del autor.
+- El panel administrativo permite cargar y sustituir la portada, y gestionar imágenes insertadas con texto alternativo, pie de foto y marcador de posición.
 - Los artículos no publicados no aparecen en las páginas públicas.
 - No se ofrece un proceso de registro público.
 
@@ -101,6 +107,10 @@ Cada artículo tendrá, como mínimo:
 - Autoría.
 - Fecha de publicación.
 - Estado de publicación.
+- Imagen de portada opcional y su texto alternativo.
+- Cero o más imágenes insertadas, con marcador único en el artículo, texto alternativo, pie de foto opcional y orden.
+
+Para insertar una imagen en el texto, el editor utilizará su marcador en una línea independiente con el formato `[[imagen:marcador]]`. Por ejemplo, `[[imagen:sensor]]` muestra la imagen cuyo marcador sea `sensor`.
 
 Los artículos publicados se mostrarán en la portada. Los borradores solo estarán disponibles para el editor autenticado mediante el panel administrativo.
 
@@ -110,13 +120,14 @@ La sección «Sobre mí» tendrá un texto breve editable. Para la primera versi
 
 ### Contenido inicial
 
-La entrega incluirá contenido de ejemplo relacionado con robótica. Este contenido deberá poder sustituirse o eliminarse desde la gestión de contenido.
+La entrega incluirá cuatro artículos de ejemplo relacionados con robótica y una presentación inicial del autor. Este contenido deberá poder sustituirse o eliminarse desde la gestión de contenido.
 
 ## 7. Requisitos no funcionales
 
 - **Adaptabilidad:** las páginas deben poder utilizarse en pantallas pequeñas y grandes sin desplazamiento horizontal innecesario.
 - **Legibilidad:** tipografía, contraste, espaciado y longitud de línea deben favorecer la lectura prolongada.
 - **Accesibilidad:** usar HTML semántico, estructura de encabezados coherente, enlaces descriptivos y controles utilizables con teclado.
+- **Imágenes:** las imágenes deben escalar al ancho del contenido sin desbordarlo; las informativas deben admitir texto alternativo y las imágenes en línea pueden tener pie de foto.
 - **Rendimiento:** las páginas informativas deben renderizarse en el servidor con Django y evitar dependencias de JavaScript innecesarias.
 - **Robustez:** las rutas inválidas de artículos deben mostrar una respuesta 404 adecuada.
 - **Seguridad:** el panel administrativo no debe exponer operaciones de edición a visitantes anónimos; se deben seguir las prácticas de seguridad de Django para producción.
@@ -124,9 +135,10 @@ La entrega incluirá contenido de ejemplo relacionado con robótica. Este conten
 ## 8. Propuesta técnica
 
 - **Backend y renderizado:** Django, con vistas y plantillas del servidor.
-- **Persistencia:** modelos Django y migraciones para artículos y presentación del autor.
+- **Persistencia:** modelos Django y migraciones para artículos, imágenes y presentación del autor; Pillow para validar imágenes cargadas.
 - **Gestión editorial:** Django Admin, restringido a usuarios autorizados.
 - **Interfaz:** plantillas HTML semánticas y CSS adaptable; JavaScript solo si una necesidad concreta lo justifica.
+- **Medios:** archivos cargados en `src/media` durante el desarrollo. En producción, los medios deben publicarse mediante almacenamiento o servidor de archivos configurado para el entorno de despliegue.
 - **Base de datos:** SQLite para desarrollo inicial. La elección de base de datos para producción queda pendiente de las necesidades de despliegue.
 
 La estructura exacta de aplicaciones, versiones de Django y configuración de despliegue se decidirán durante la implementación.

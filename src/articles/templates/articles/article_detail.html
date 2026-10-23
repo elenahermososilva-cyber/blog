@@ -1,0 +1,29 @@
+{% extends "articles/base.html" %}
+{% load article_content %}
+
+{% block title %}{{ article.title }}{% endblock %}
+{% block meta_description %}{{ article.summary }}{% endblock %}
+
+{% block content %}
+    <article class="post">
+        <a class="back-link" href="{% url 'home' %}">← Volver a los artículos</a>
+        <header class="post-header">
+            <p class="eyebrow">Cuaderno de exploración</p>
+            <h1>{{ article.title }}</h1>
+            <p class="post-meta">
+                <span>Por {{ article.author }}</span>
+                <span aria-hidden="true">·</span>
+                <time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:"j F Y" }}</time>
+            </p>
+            {% if article.cover_image %}
+                <figure class="article-figure article-cover-figure">
+                    <img src="{{ article.cover_image.url }}" alt="{{ article.cover_alt }}" fetchpriority="high">
+                </figure>
+            {% endif %}
+        </header>
+        <div class="prose">
+            {% render_article_body article %}
+        </div>
+        <a class="back-link post-back-link" href="{% url 'home' %}">← Volver a los artículos</a>
+    </article>
+{% endblock %}

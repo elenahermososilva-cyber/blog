@@ -1,0 +1,36 @@
+{% extends "articles/base.html" %}
+
+{% block title %}Artículos sobre robótica{% endblock %}
+{% block meta_description %}Descubre artículos recientes sobre robótica, sensores y proyectos tecnológicos.{% endblock %}
+
+{% block content %}
+    <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Un espacio para aprender y experimentar</p>
+        <h1 id="page-title">Robótica, paso a paso</h1>
+        <p>Ideas, conceptos y proyectos para entender cómo las máquinas perciben, deciden y actúan.</p>
+    </section>
+
+    <section class="article-section" aria-labelledby="recent-title">
+        <div class="section-heading">
+            <p class="eyebrow">Cuaderno de exploración</p>
+            <h2 id="recent-title">Artículos recientes</h2>
+        </div>
+        {% if articles %}
+            <div class="article-list">
+                {% for article in articles %}
+                    <article class="article-card">
+                        {% if article.cover_image %}
+                            <img class="article-cover" src="{{ article.cover_image.url }}" alt="" loading="lazy" decoding="async">
+                        {% endif %}
+                        <p class="article-date"><time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:"j F Y" }}</time></p>
+                        <h3><a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a></h3>
+                        <p>{{ article.summary }}</p>
+                        <a class="text-link" href="{% url 'article_detail' article.slug %}" aria-label="Leer el artículo: {{ article.title }}">Leer artículo <span aria-hidden="true">→</span></a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">Todavía no hay artículos publicados. ¡Vuelve pronto para descubrir nuevas ideas!</p>
+        {% endif %}
+    </section>
+{% endblock %}
