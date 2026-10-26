@@ -70,7 +70,7 @@ Abre `http://127.0.0.1:8000/` en el navegador. Para preparar la base de datos lo
 python src\manage.py migrate
 ```
 
-Las migraciones cargan cuatro artículos y una presentación de ejemplo, que puedes modificar o eliminar desde Django Admin en `http://127.0.0.1:8000/admin/`. Para acceder por primera vez al panel, crea un usuario administrador:
+Las migraciones cargan cuatro artículos, cada uno con una ilustración de portada y otra dentro del texto, además de una presentación de ejemplo. Puedes cambiar las ilustraciones por imágenes propias desde Django Admin en `http://127.0.0.1:8000/admin/`. Para acceder por primera vez al panel, crea un usuario administrador:
 
 ```powershell
 python src\manage.py createsuperuser

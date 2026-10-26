@@ -24,13 +24,16 @@ class ArticleAdmin(admin.ModelAdmin):
                 'slug',
                 'excerpt',
                 'cover_image',
+                'cover_illustration',
                 'cover_alt',
                 'content',
             ),
             'description': (
                 'Para colocar una imagen dentro del texto, añade su marcador '
                 'en una línea independiente con el formato [[imagen:marcador]]. '
-                'Configura ese mismo marcador en la imagen relacionada.'
+                'Configura ese mismo marcador en la imagen relacionada. Los '
+                'artículos de ejemplo incluyen ilustraciones que puedes '
+                'conservar o sustituir.'
             ),
         }),
         ('Publicación', {'fields': ('author', 'published_at', 'status')}),

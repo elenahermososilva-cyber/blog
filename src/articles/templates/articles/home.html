@@ -1,4 +1,5 @@
 {% extends "articles/base.html" %}
+{% load static %}
 
 {% block title %}Artículos sobre robótica{% endblock %}
 {% block meta_description %}Descubre artículos recientes sobre robótica, sensores y proyectos tecnológicos.{% endblock %}
@@ -21,6 +22,8 @@
                     <article class="article-card">
                         {% if article.cover_image %}
                             <img class="article-cover" src="{{ article.cover_image.url }}" alt="" loading="lazy" decoding="async">
+                        {% elif article.cover_illustration %}
+                            <img class="article-cover" src="{% static 'articles/images/' %}{{ article.cover_illustration }}.svg" alt="" loading="lazy" decoding="async">
                         {% endif %}
                         <p class="article-date"><time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:"j F Y" }}</time></p>
                         <h3><a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a></h3>

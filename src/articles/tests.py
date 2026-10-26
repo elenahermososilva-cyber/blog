@@ -3,6 +3,7 @@ import tempfile
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.staticfiles import finders
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
@@ -63,6 +64,47 @@ class BlogPageTests(TestCase):
             ).count(),
             4,
         )
+
+    def test_sample_articles_have_cover_and_inline_illustrations(self):
+        articles = Article.objects.filter(
+            slug__in=(
+                'que-es-un-robot',
+                'primeros-pasos-sensores',
+                'del-sensor-al-movimiento',
+                'como-se-orienta-un-robot-movil',
+            )
+        ).prefetch_related('inline_images')
+
+        self.assertEqual(articles.count(), 4)
+        for article in articles:
+            with self.subTest(article=article.slug):
+                self.assertTrue(article.cover_illustration)
+                self.assertTrue(article.inline_images.exists())
+                self.assertIn(
+                    f'[[imagen:{article.inline_images.first().marker}]]',
+                    article.content,
+                )
+                self.assertIsNotNone(
+                    finders.find(
+                        f'articles/images/{article.cover_illustration}.svg'
+                    )
+                )
+
+                response = self.client.get(
+                    reverse('article_detail', args=[article.slug])
+                )
+                self.assertContains(
+                    response,
+                    'class="article-figure article-cover-figure"',
+                )
+                self.assertContains(
+                    response,
+                    'class="article-figure"',
+                )
+                self.assertContains(
+                    response,
+                    f'/static/articles/images/{article.cover_illustration}.svg',
+                )
 
     def test_home_shows_empty_state_without_published_articles(self):
         Article.objects.all().delete()

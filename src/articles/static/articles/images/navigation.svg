@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1">
+      <stop stop-color="#e6f2ea"/>
+      <stop offset="1" stop-color="#c0ddcf"/>
+    </linearGradient>
+    <linearGradient id="rover" x2="0" y2="1">
+      <stop stop-color="#388b74"/>
+      <stop offset="1" stop-color="#18584b"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="url(#bg)"/>
+  <path d="M0 410c132-31 230-15 355 6s278-2 605-56v180H0z" fill="#a0c6b2"/>
+  <path d="M121 380c125-119 206 71 329-42s186-166 386-174" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-dasharray="2 27"/>
+  <path d="M121 380c125-119 206 71 329-42s186-166 386-174" fill="none" stroke="#287f70" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+  <g stroke="#173b38" stroke-width="11" stroke-linejoin="round">
+    <rect x="364" y="263" width="223" height="118" rx="30" fill="url(#rover)"/>
+    <path d="m410 263 42-69h88l40 69" fill="#e8f3e9"/>
+    <circle cx="412" cy="385" r="33" fill="#263f3a"/>
+    <circle cx="540" cy="385" r="33" fill="#263f3a"/>
+    <circle cx="412" cy="385" r="12" fill="#e7944f" stroke="none"/>
+    <circle cx="540" cy="385" r="12" fill="#e7944f" stroke="none"/>
+    <path d="M497 194v-45" fill="none" stroke-linecap="round"/>
+    <circle cx="497" cy="137" r="13" fill="#e7944f"/>
+    <path d="M587 310h45" fill="none"/>
+  </g>
+  <g fill="#287f70">
+    <circle cx="121" cy="380" r="17"/>
+    <circle cx="836" cy="164" r="20"/>
+  </g>
+  <g fill="none" stroke="#287f70" stroke-width="7">
+    <circle cx="121" cy="380" r="32"/>
+    <circle cx="836" cy="164" r="38"/>
+  </g>
+  <path d="m808 158 28-23 26 25-27 24z" fill="#e7944f" stroke="#173b38" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="748" cy="351" r="10" fill="#fff" opacity=".8"/>
+  <circle cx="220" cy="159" r="8" fill="#fff" opacity=".8"/>
+</svg>

@@ -1,6 +1,7 @@
 import re
 
 from django import template
+from django.templatetags.static import static
 from django.utils.html import format_html, format_html_join
 
 register = template.Library()
@@ -47,21 +48,39 @@ def render_article_body(article):
             image = images.get(match.group(1))
             if image:
                 if image.caption:
+                    if image.image:
+                        image_element = format_html(
+                            '<img src="{}" alt="{}" loading="lazy" decoding="async">',
+                            image.image.url,
+                            image.alt_text,
+                        )
+                    else:
+                        image_element = format_html(
+                            '<img src="{}" alt="{}" loading="lazy" decoding="async">',
+                            static(f'articles/images/{image.illustration}.svg'),
+                            image.alt_text,
+                        )
                     rendered_blocks.append(format_html(
-                        '<figure class="article-figure">'
-                        '<img src="{}" alt="{}" loading="lazy" decoding="async">'
-                        '<figcaption>{}</figcaption></figure>',
-                        image.image.url,
-                        image.alt_text,
+                        '<figure class="article-figure">{}<figcaption>{}</figcaption></figure>',
+                        image_element,
                         image.caption,
                     ))
                 else:
+                    if image.image:
+                        image_element = format_html(
+                            '<img src="{}" alt="{}" loading="lazy" decoding="async">',
+                            image.image.url,
+                            image.alt_text,
+                        )
+                    else:
+                        image_element = format_html(
+                            '<img src="{}" alt="{}" loading="lazy" decoding="async">',
+                            static(f'articles/images/{image.illustration}.svg'),
+                            image.alt_text,
+                        )
                     rendered_blocks.append(format_html(
-                        '<figure class="article-figure">'
-                        '<img src="{}" alt="{}" loading="lazy" decoding="async">'
-                        '</figure>',
-                        image.image.url,
-                        image.alt_text,
+                        '<figure class="article-figure">{}</figure>',
+                        image_element,
                     ))
             else:
                 rendered_blocks.append(format_html('<p>{}</p>', block))

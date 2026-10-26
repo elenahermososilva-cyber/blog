@@ -6,6 +6,13 @@ from django.utils import timezone
 from django.utils.text import Truncator
 
 
+class Illustration(models.TextChoices):
+    ROBOT = 'robot', 'Robot explorador'
+    SENSOR = 'sensor', 'Sensor de distancia'
+    CONTROLLER = 'controller', 'Placa controladora'
+    NAVIGATION = 'navigation', 'Ruta de navegación'
+
+
 class Article(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'draft', 'Borrador'
@@ -19,6 +26,13 @@ class Article(models.Model):
         'imagen de portada',
         upload_to='articles/covers/',
         blank=True,
+    )
+    cover_illustration = models.CharField(
+        'ilustración de portada',
+        max_length=20,
+        choices=Illustration.choices,
+        blank=True,
+        help_text='Ilustración de ejemplo. Una imagen cargada tiene prioridad.',
     )
     cover_alt = models.CharField(
         'texto alternativo de portada',
@@ -84,7 +98,17 @@ class ArticleImage(models.Model):
         max_length=80,
         help_text='Identificador para insertar la imagen, por ejemplo: sensor.',
     )
-    image = models.ImageField('imagen', upload_to='articles/inline/')
+    image = models.ImageField(
+        'imagen',
+        upload_to='articles/inline/',
+        blank=True,
+    )
+    illustration = models.CharField(
+        'ilustración de ejemplo',
+        max_length=20,
+        choices=Illustration.choices,
+        blank=True,
+    )
     alt_text = models.CharField(
         'texto alternativo',
         max_length=200,
@@ -106,6 +130,14 @@ class ArticleImage(models.Model):
 
     def __str__(self):
         return f'{self.article}: {self.marker}'
+
+    def clean(self):
+        super().clean()
+        if bool(self.image) == bool(self.illustration):
+            raise ValidationError(
+                'Selecciona una imagen cargada o una ilustración de ejemplo, '
+                'pero no ambas.'
+            )
 
 
 class SiteProfile(models.Model):

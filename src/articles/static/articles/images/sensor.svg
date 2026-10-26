@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1">
+      <stop stop-color="#e4f2ed"/>
+      <stop offset="1" stop-color="#c5dfd4"/>
+    </linearGradient>
+    <linearGradient id="sensor" x2="0" y2="1">
+      <stop stop-color="#318b79"/>
+      <stop offset="1" stop-color="#15594f"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="url(#bg)"/>
+  <path d="M0 414c190-42 319-18 459 8s291-22 501-31v149H0z" fill="#a4c9b9"/>
+  <g fill="none" stroke="#287f70" stroke-width="10" opacity=".7">
+    <path d="M511 184a76 76 0 0 1 0 152"/>
+    <path d="M511 145a115 115 0 0 1 0 230"/>
+    <path d="M511 105a155 155 0 0 1 0 310"/>
+  </g>
+  <g stroke="#173b38" stroke-width="12" stroke-linejoin="round">
+    <rect x="190" y="178" width="298" height="182" rx="31" fill="url(#sensor)"/>
+    <circle cx="264" cy="269" r="43" fill="#edf6ef"/>
+    <circle cx="414" cy="269" r="43" fill="#edf6ef"/>
+    <circle cx="264" cy="269" r="18" fill="#e7944f" stroke="none"/>
+    <circle cx="414" cy="269" r="18" fill="#e7944f" stroke="none"/>
+    <path d="M235 360v57m208-57v57" fill="none" stroke-linecap="round"/>
+    <path d="M200 417h71m137 0h71" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M700 236h106m-106 38h75m-75 38h45" stroke="#173b38" stroke-width="10" stroke-linecap="round"/>
+  <rect x="789" y="218" width="25" height="112" rx="12" fill="#e7944f"/>
+  <circle cx="135" cy="118" r="11" fill="#fff" opacity=".8"/>
+  <circle cx="823" cy="125" r="8" fill="#fff" opacity=".8"/>
+</svg>
