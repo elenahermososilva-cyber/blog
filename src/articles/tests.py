@@ -1,12 +1,15 @@
 from io import BytesIO
 import tempfile
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.staticfiles import finders
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
 from .models import Article, ArticleImage, SiteProfile
 
@@ -271,3 +274,145 @@ class ArticleContentSafetyTests(TestCase):
                     'alt="Placa con componentes electrónicos"',
                 )
                 self.assertContains(response, 'Controlador principal del robot')
+
+
+class ArticleApiTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        Article.objects.all().delete()
+        self.published_article = Article.objects.create(
+            title='Artículo público',
+            slug='articulo-publico',
+            content='Contenido publicado.',
+            status=Article.Status.PUBLISHED,
+        )
+        self.draft_article = Article.objects.create(
+            title='Borrador privado',
+            slug='borrador-privado',
+            content='Contenido en preparación.',
+            status=Article.Status.DRAFT,
+        )
+
+    def test_list_is_public_and_only_includes_published_articles(self):
+        response = self.client.get(reverse('api_article_list_create'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(
+            response.data[0],
+            {
+                'id': self.published_article.pk,
+                'titulo': 'Artículo público',
+                'cuerpo': 'Contenido publicado.',
+                'estado': 'publicado',
+            },
+        )
+
+    def test_detail_is_public_and_hides_drafts_and_missing_articles(self):
+        published_response = self.client.get(
+            reverse('api_article_detail', args=[self.published_article.pk])
+        )
+        draft_response = self.client.get(
+            reverse('api_article_detail', args=[self.draft_article.pk])
+        )
+        missing_response = self.client.get(
+            reverse('api_article_detail', args=[999999])
+        )
+
+        self.assertEqual(published_response.status_code, 200)
+        self.assertEqual(published_response.data['estado'], 'publicado')
+        self.assertEqual(draft_response.status_code, 404)
+        self.assertEqual(missing_response.status_code, 404)
+
+    def test_post_requires_a_token_from_a_staff_user(self):
+        url = reverse('api_article_list_create')
+        payload = {'titulo': 'Nuevo artículo', 'cuerpo': 'Texto del artículo.'}
+
+        anonymous_response = self.client.post(url, payload, format='json')
+        self.assertEqual(anonymous_response.status_code, 401)
+
+        user_model = get_user_model()
+        regular_user = user_model.objects.create_user(
+            username='lector',
+            password='test-password',
+        )
+        regular_token = Token.objects.create(user=regular_user)
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Token {regular_token.key}'
+        )
+        regular_response = self.client.post(url, payload, format='json')
+        self.assertEqual(regular_response.status_code, 403)
+
+        admin_user = user_model.objects.create_user(
+            username='editor',
+            password='test-password',
+            is_staff=True,
+        )
+        admin_token = Token.objects.create(user=admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {admin_token.key}')
+        admin_response = self.client.post(url, payload, format='json')
+
+        self.assertEqual(admin_response.status_code, 201)
+        self.assertEqual(admin_response.data['estado'], 'borrador')
+
+    def test_post_creates_a_draft_and_generates_a_unique_slug(self):
+        Article.objects.create(
+            title='Título existente',
+            slug='prueba-api',
+            content='Contenido publicado.',
+            status=Article.Status.PUBLISHED,
+        )
+        user = get_user_model().objects.create_user(
+            username='admin-api',
+            password='test-password',
+            is_staff=True,
+        )
+        token = Token.objects.create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+
+        response = self.client.post(
+            reverse('api_article_list_create'),
+            {
+                'titulo': 'Prueba API',
+                'cuerpo': 'Texto del borrador.',
+                'estado': 'publicado',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            set(response.data),
+            {'id', 'titulo', 'cuerpo', 'estado'},
+        )
+        self.assertEqual(response.data['estado'], 'borrador')
+        article = Article.objects.get(pk=response.data['id'])
+        self.assertEqual(article.slug, 'prueba-api-2')
+        self.assertEqual(article.status, Article.Status.DRAFT)
+        self.assertEqual(article.author, 'Equipo de Bitácora Robótica')
+
+    def test_post_rejects_missing_or_blank_required_fields(self):
+        user = get_user_model().objects.create_user(
+            username='admin-validacion',
+            password='test-password',
+            is_staff=True,
+        )
+        token = Token.objects.create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+        url = reverse('api_article_list_create')
+
+        missing_body = self.client.post(
+            url,
+            {'titulo': 'Artículo sin cuerpo'},
+            format='json',
+        )
+        blank_title = self.client.post(
+            url,
+            {'titulo': '   ', 'cuerpo': 'Contenido.'},
+            format='json',
+        )
+
+        self.assertEqual(missing_body.status_code, 400)
+        self.assertIn('cuerpo', missing_body.data)
+        self.assertEqual(blank_title.status_code, 400)
+        self.assertIn('titulo', blank_title.data)

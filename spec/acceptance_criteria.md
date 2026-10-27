@@ -52,3 +52,14 @@ Los criterios siguientes definen las condiciones verificables para dar por acept
 
 - La base de datos recibe cuatro artículos de ejemplo relacionados con robótica, además de la presentación inicial del autor.
 - Los dos artículos nuevos aparecen en la portada y sus páginas se pueden abrir como las demás publicaciones.
+
+## CA-08: API REST de artículos
+
+- `GET /api/articulos/` responde HTTP 200 con una lista JSON de artículos publicados y excluye todos los borradores.
+- Cada objeto devuelto por la API incluye `id`, `titulo`, `cuerpo` y `estado`; para las publicaciones, `estado` es `publicado`.
+- `GET /api/articulos/{id}/` devuelve esos mismos campos para un artículo publicado. Un borrador y un identificador inexistente responden HTTP 404.
+- `POST /api/articulos/` acepta JSON con `titulo` y `cuerpo`, y solo permite la operación a un usuario de Django con `is_staff=True` que se autentique con `Authorization: Token <token>`.
+- Si no se aporta un token válido, el POST responde HTTP 401; si el token pertenece a un usuario autenticado que no es personal, responde HTTP 403.
+- Un POST válido devuelve HTTP 201 con `id`, `titulo`, `cuerpo` y `estado: "borrador"`. El servidor genera los campos restantes y no permite publicar el artículo mediante la API.
+- Los campos `titulo` y `cuerpo` ausentes o vacíos se rechazan con HTTP 400 y errores JSON de validación.
+- La API reutiliza `Article` y `published`; la web, Django Admin y los artículos existentes conservan su comportamiento.

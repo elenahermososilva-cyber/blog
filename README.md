@@ -24,6 +24,7 @@ El proyecto no contempla cuentas para lectores, comentarios, suscripciones ni fu
 - `src/manage.py`: comandos de administración de Django.
 - `src/config/`: configuración y enrutamiento principal del proyecto.
 - `src/articles/`: aplicación del blog, modelos, vistas, plantillas, estilos y pruebas.
+- `src/articles/api_urls.py`: rutas JSON de la API REST.
 - `src/requirements.txt`: dependencias de Django.
 
 ## Preparación del entorno
@@ -79,6 +80,57 @@ python src\manage.py createsuperuser
 En Django Admin puedes cargar una imagen de portada por artículo y añadir varias imágenes en línea desde «Imágenes dentro del artículo». Cada imagen en línea tiene un marcador único (por ejemplo, `sensor`) que puedes colocar en el texto con `[[imagen:sensor]]`, en una línea independiente. Añade texto alternativo para las imágenes en línea y para las portadas informativas. Los archivos subidos se guardan en `src\media` y se sirven desde `/media/` durante el desarrollo; en producción deben servirse desde un almacenamiento o servidor de medios configurado para el despliegue.
 
 El contenido de los artículos también admite párrafos separados por líneas en blanco y subtítulos con `## ` o `### ` al inicio de una línea.
+
+## API REST
+
+La API permite consultar públicamente los artículos publicados y crear borradores solo con un token de un usuario de Django con acceso de personal (`is_staff`). No permite publicar artículos: los borradores se revisan y publican desde Django Admin.
+
+- `GET /api/articulos/`: lista de artículos publicados.
+- `GET /api/articulos/<id>/`: detalle de un artículo publicado; devuelve 404 para borradores o identificadores inexistentes.
+- `POST /api/articulos/`: crea un borrador. Recibe JSON con `titulo` y `cuerpo`; responde con `id`, `titulo`, `cuerpo` y `estado`.
+
+Para generar un token para un administrador existente, desde la carpeta raíz ejecuta:
+
+```cmd
+python src\manage.py drf_create_token TU_USUARIO
+```
+
+El comando muestra el token. Guárdalo de forma privada y no lo compartas ni lo publiques. Ejemplos para cmd (sustituye `TU_TOKEN` por el valor obtenido):
+
+```cmd
+curl.exe http://127.0.0.1:8000/api/articulos/
+curl.exe http://127.0.0.1:8000/api/articulos/1/
+curl.exe -X POST http://127.0.0.1:8000/api/articulos/ -H "Authorization: Token TU_TOKEN" -H "Content-Type: application/json" -d "{\"titulo\":\"Prueba API\",\"cuerpo\":\"Texto del borrador.\"}"
+```
+
+La respuesta del POST válido tiene HTTP 201 e incluye `"estado": "borrador"`. Los datos incompletos responden HTTP 400; las escrituras sin token válido se rechazan. En un sitio publicado, utiliza HTTPS para proteger el token en tránsito.
+
+### Hacer un POST desde PowerShell usando el token de `.env`
+
+Guarda el token en el archivo `.env`, en la carpeta raíz del proyecto, con este formato:
+
+```env
+BLOG_API_TOKEN=tu_token
+```
+
+Con el servidor ejecutándose, abre PowerShell en esa carpeta y ejecuta:
+
+```powershell
+$env:BLOG_API_TOKEN = (Get-Content .env | Where-Object { $_ -match '^BLOG_API_TOKEN=' } | Select-Object -First 1) -replace '^BLOG_API_TOKEN=', ''
+
+$json = '{"titulo":"Prueba API VARIABLE","cuerpo":"Texto del borrador."}'
+$bodyFile = Join-Path $env:TEMP 'blog-api-body.json'
+[IO.File]::WriteAllText($bodyFile, $json, [Text.UTF8Encoding]::new($false))
+
+curl.exe -X POST http://127.0.0.1:8000/api/articulos/ `
+  -H "Authorization: Token $env:BLOG_API_TOKEN" `
+  -H "Content-Type: application/json" `
+  --data-binary "@$bodyFile"
+
+Remove-Item $bodyFile
+```
+
+PowerShell no carga `.env` automáticamente, por eso el primer comando copia el token a la variable de entorno de la ventana actual. El archivo temporal evita problemas de comillas al pasar el JSON a `curl.exe`. El archivo `.env` está excluido de Git; no compartas ni publiques el token.
 
 Ejecuta las pruebas con:
 

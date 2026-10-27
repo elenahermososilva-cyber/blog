@@ -10,6 +10,8 @@ La portada orienta al visitante hacia los artículos recientes con sus imágenes
 
 El sitio también debe ser fácil de mantener: el editor puede actualizar los artículos y la presentación del autor mediante el panel de administración de Django, sin modificar las plantillas. Los visitantes no necesitan una cuenta ni se les pide participar para leer.
 
+Además, integraciones autorizadas pueden consultar en JSON los artículos publicados y enviar borradores mediante una API REST. La escritura queda restringida a administradores; la publicación sigue siendo una acción editorial en Django Admin.
+
 ## Principios
 
 - **Lectura primero:** priorizar una estructura comprensible, texto legible y una presentación sin elementos innecesarios.

@@ -27,6 +27,7 @@ No habrá cuentas públicas ni registro de lectores. Para mantener el contenido 
 6. Contenido inicial de ejemplo que pueda sustituirse.
 7. Gestión básica del contenido mediante el panel administrativo de Django.
 8. Imágenes de portada opcionales e imágenes insertadas en el cuerpo de los artículos.
+9. API REST para consultar artículos publicados y crear borradores con credenciales de un administrador.
 
 ### Excluido
 
@@ -95,6 +96,20 @@ El editor podrá crear, editar y retirar artículos y actualizar el texto de «S
 - Los artículos no publicados no aparecen en las páginas públicas.
 - No se ofrece un proceso de registro público.
 
+### RF-06: API de artículos
+
+La API REST ofrecerá `GET /api/articulos/` para listar artículos publicados, `GET /api/articulos/{id}/` para consultar un artículo publicado y `POST /api/articulos/` para crear un borrador. Los GET serán públicos. El POST aceptará `titulo` y `cuerpo`, requerirá autenticación mediante un token de Django REST Framework perteneciente a un usuario administrador (`is_staff`) y siempre creará el artículo como borrador.
+
+Las respuestas correctas incluirán `id`, `titulo`, `cuerpo` y `estado`, con `estado` igual a `publicado` para las consultas y `borrador` para la creación. El sistema generará el slug y completará los valores predeterminados del modelo, sin permitir que el cliente publique el artículo ni cambie otros campos.
+
+**Criterios de aceptación**
+
+- Los GET solo exponen artículos publicados; un borrador o un identificador inexistente responde HTTP 404 en el detalle.
+- El POST sin token válido responde con error de autenticación; un usuario autenticado que no sea personal recibe HTTP 403.
+- Un administrador con token puede crear un borrador mediante JSON con `titulo` y `cuerpo`; la respuesta es HTTP 201 y contiene los cuatro campos del contrato.
+- Los datos obligatorios ausentes o vacíos producen HTTP 400 con errores de validación.
+- La API no cambia el modelo existente ni afecta a la web o al Django Admin.
+
 ## 6. Requisitos de contenido y datos
 
 ### Artículo
@@ -135,6 +150,7 @@ La entrega incluirá cuatro artículos de ejemplo relacionados con robótica y u
 ## 8. Propuesta técnica
 
 - **Backend y renderizado:** Django, con vistas y plantillas del servidor.
+- **API:** Django REST Framework, con autenticación por token para escrituras y acceso público de solo lectura a publicaciones.
 - **Persistencia:** modelos Django y migraciones para artículos, imágenes y presentación del autor; Pillow para validar imágenes cargadas.
 - **Gestión editorial:** Django Admin, restringido a usuarios autorizados.
 - **Interfaz:** plantillas HTML semánticas y CSS adaptable; JavaScript solo si una necesidad concreta lo justifica.
@@ -149,6 +165,8 @@ La estructura exacta de aplicaciones, versiones de Django y configuración de de
 - `/sobre-mi/` — presentación del autor.
 - `/articulos/<slug>/` — detalle de un artículo.
 - `/admin/` — panel administrativo de Django, con acceso restringido.
+- `/api/articulos/` — listado público de artículos publicados y creación de borradores autenticada.
+- `/api/articulos/<id>/` — detalle público de un artículo publicado.
 
 ## 10. Métricas de éxito
 

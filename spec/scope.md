@@ -11,12 +11,14 @@ Entregar una primera versión en español de un blog de robótica centrado en la
 - **Sobre mí:** página con una presentación breve y editable del autor, accesible desde la navegación principal.
 - **Navegación:** enlaces claros entre la portada y «Sobre mí», y una forma de volver a la portada desde cada artículo. La navegación básica funciona sin JavaScript.
 - **Gestión editorial:** creación, edición y retirada de artículos, carga de imágenes de portada e imágenes insertadas, además de la actualización de la presentación, mediante el panel estándar de Django para editores autorizados. Los borradores no se muestran en las páginas públicas.
+- **API REST de artículos:** consulta pública en JSON de artículos publicados y creación de borradores en `/api/articulos/`, autenticada mediante un token de Django REST Framework de un usuario administrador. El contrato solo permite enviar título y cuerpo; el servidor completa el resto y el borrador debe publicarse desde Django Admin.
 - **Contenido de inicio:** cuatro artículos de ejemplo sobre robótica y una presentación inicial, sustituibles o eliminables por el editor.
 - **Experiencia de lectura:** páginas adaptables a móviles y escritorio, con HTML semántico, encabezados coherentes, enlaces descriptivos, uso por teclado y estilos que favorezcan la legibilidad.
 
 ## Fuera de alcance
 
 - Registro, cuentas, perfiles o interacción para lectores.
+- Registro público, gestión de usuarios por la API o publicación de artículos mediante la API.
 - Comentarios, funciones sociales, suscripciones y boletines.
 - Búsqueda de artículos.
 - Flujos editoriales avanzados, como revisión, programación de publicaciones o varios roles editoriales.
